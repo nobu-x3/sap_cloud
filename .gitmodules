@@ -13,3 +13,6 @@
 [submodule "sap_http"]
 	path = sap_http
 	url = git@github.com:nobu-x3/sap_http.git
+[submodule "tomlplusplus"]
+	path = tomlplusplus
+	url = https://github.com/marzer/tomlplusplus.git
