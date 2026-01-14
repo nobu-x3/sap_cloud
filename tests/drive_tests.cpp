@@ -2,7 +2,7 @@
 #include <fstream>
 #include <gtest/gtest.h>
 #include <sap_cloud/services/file_service.h>
-#include <sap_cloud/storage/metadata.h>
+#include <sap_cloud/metadata.h>
 #include <sap_cloud/config.h>
 #include <sap_fs/fs.h>
 #include <sap_sync/sync_types.h>

@@ -1,4 +1,4 @@
-#include "sap_cloud/storage/metadata.h"
+#include "sap_cloud/metadata.h"
 #include <sap_core/log.h>
 #include <sstream>
 

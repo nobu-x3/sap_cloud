@@ -1,6 +1,6 @@
 #pragma once
 
-#include <sap_cloud/storage/metadata.h>
+#include <sap_cloud/metadata.h>
 #include <sap_core/result.h>
 #include <sap_core/types.h>
 #include <sap_fs/fs.h>
