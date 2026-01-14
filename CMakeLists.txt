@@ -22,6 +22,7 @@ add_library(sap_drive_lib STATIC
     src/config.cpp
     src/storage/metadata.cpp
     src/services/file_service.cpp
+    src/services/notes_service.cpp
 )
 add_library(sap::drive_lib ALIAS sap_drive_lib)
 
