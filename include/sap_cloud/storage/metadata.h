@@ -8,7 +8,7 @@
 #include <sap_sync/sync_types.h>
 #include <vector>
 
-namespace sap::drive::storage {
+namespace sap::cloud::storage {
 
     // =============================================================================
     // Metadata Store
@@ -101,4 +101,4 @@ namespace sap::drive::storage {
         db::Database m_Db;
     };
 
-} // namespace sap::drive::storage
+} // namespace sap::cloud::storage

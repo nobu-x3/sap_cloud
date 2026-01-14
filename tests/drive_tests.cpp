@@ -6,7 +6,7 @@
 #include <sap_sync/sync_types.h>
 
 using namespace sap;
-using namespace sap::drive;
+using namespace sap::cloud;
 
 namespace sfs = std::filesystem;
 
@@ -55,8 +55,8 @@ TEST_F(FilesystemTest, WriteCreatesParentDirs) {
 }
 
 TEST_F(FilesystemTest, ReadString) {
-    auto writeResult = m_Fs->write("text.txt", "Hello, World!");
-    ASSERT_TRUE(writeResult.has_value());
+    auto write_result = m_Fs->write("text.txt", "Hello, World!");
+    ASSERT_TRUE(write_result.has_value());
     auto readResult = m_Fs->read_string("text.txt");
     ASSERT_TRUE(readResult.has_value());
     EXPECT_EQ(readResult.value(), "Hello, World!");
@@ -116,14 +116,14 @@ TEST_F(MetadataStoreTest, UpsertAndGetFile) {
     meta.created_at = 1234567890;
     meta.updated_at = 1234567890;
     meta.is_deleted = false;
-    auto upsertResult = m_Store->upsert_file(meta);
-    ASSERT_TRUE(upsertResult.has_value()) << upsertResult.error();
-    auto getResult = m_Store->get_file("test/file.txt");
-    ASSERT_TRUE(getResult.has_value()) << getResult.error();
-    ASSERT_TRUE(getResult.value().has_value());
-    EXPECT_EQ(getResult.value()->path, "test/file.txt");
-    EXPECT_EQ(getResult.value()->hash, "abc123");
-    EXPECT_EQ(getResult.value()->size, 100);
+    auto upsert_result = m_Store->upsert_file(meta);
+    ASSERT_TRUE(upsert_result.has_value()) << upsert_result.error();
+    auto get_result = m_Store->get_file("test/file.txt");
+    ASSERT_TRUE(get_result.has_value()) << get_result.error();
+    ASSERT_TRUE(get_result.value().has_value());
+    EXPECT_EQ(get_result.value()->path, "test/file.txt");
+    EXPECT_EQ(get_result.value()->hash, "abc123");
+    EXPECT_EQ(get_result.value()->size, 100);
 }
 
 TEST_F(MetadataStoreTest, GetAllFiles) {
@@ -169,12 +169,12 @@ TEST_F(MetadataStoreTest, MarkDeleted) {
     meta.mtime = meta.created_at = meta.updated_at = 1000;
     meta.is_deleted = false;
     auto res = m_Store->upsert_file(meta);
-    auto markResult = m_Store->mark_deleted("to_delete.txt");
-    ASSERT_TRUE(markResult.has_value());
-    auto getResult = m_Store->get_file("to_delete.txt");
-    ASSERT_TRUE(getResult.has_value());
-    ASSERT_TRUE(getResult.value().has_value());
-    EXPECT_TRUE(getResult.value()->is_deleted);
+    auto mark_result = m_Store->mark_deleted("to_delete.txt");
+    ASSERT_TRUE(mark_result.has_value());
+    auto get_result = m_Store->get_file("to_delete.txt");
+    ASSERT_TRUE(get_result.has_value());
+    ASSERT_TRUE(get_result.value().has_value());
+    EXPECT_TRUE(get_result.value()->is_deleted);
 }
 
 TEST_F(MetadataStoreTest, NotesCRUD) {
@@ -185,13 +185,13 @@ TEST_F(MetadataStoreTest, NotesCRUD) {
     note.hash = "notehash";
     note.created_at = note.updated_at = sync::now_ms();
     note.tags = {"tag1", "tag2"};
-    auto upsertResult = m_Store->upsert_note(note);
-    ASSERT_TRUE(upsertResult.has_value()) << upsertResult.error();
-    auto getResult = m_Store->get_note("test-uuid");
-    ASSERT_TRUE(getResult.has_value()) << getResult.error();
-    ASSERT_TRUE(getResult.value().has_value());
-    EXPECT_EQ(getResult.value()->title, "Test Note");
-    EXPECT_EQ(getResult.value()->tags.size(), 2);
+    auto upsert_result = m_Store->upsert_note(note);
+    ASSERT_TRUE(upsert_result.has_value()) << upsert_result.error();
+    auto get_result = m_Store->get_note("test-uuid");
+    ASSERT_TRUE(get_result.has_value()) << get_result.error();
+    ASSERT_TRUE(get_result.value().has_value());
+    EXPECT_EQ(get_result.value()->title, "Test Note");
+    EXPECT_EQ(get_result.value()->tags.size(), 2);
 }
 
 TEST_F(MetadataStoreTest, Tags) {
@@ -210,31 +210,31 @@ TEST_F(MetadataStoreTest, Tags) {
     n2.tags = {"shared", "unique2"};
     auto res = m_Store->upsert_note(n1);
     res = m_Store->upsert_note(n2);
-    auto tagsResult = m_Store->get_all_tags();
-    ASSERT_TRUE(tagsResult.has_value());
+    auto tags_result = m_Store->get_all_tags();
+    ASSERT_TRUE(tags_result.has_value());
     // Should have 3 tags: shared (count=2), unique1 (count=1), unique2 (count=1)
-    EXPECT_EQ(tagsResult.value().size(), 3);
+    EXPECT_EQ(tags_result.value().size(), 3);
     // Find shared tag
-    bool foundShared = false;
-    for (const auto& tag : tagsResult.value()) {
+    bool found_shared = false;
+    for (const auto& tag : tags_result.value()) {
         if (tag.name == "shared") {
-            foundShared = true;
+            found_shared = true;
             EXPECT_EQ(tag.count, 2);
         }
     }
-    EXPECT_TRUE(foundShared);
+    EXPECT_TRUE(found_shared);
 }
 
 TEST_F(MetadataStoreTest, AuthTokens) {
     auto now = sync::now_ms() / 1000;
-    auto storeResult = m_Store->store_token("test-token", now + 3600);
-    ASSERT_TRUE(storeResult.has_value());
-    auto validResult = m_Store->validate_token("test-token");
-    ASSERT_TRUE(validResult.has_value());
-    EXPECT_TRUE(validResult.value());
-    auto invalidResult = m_Store->validate_token("wrong-token");
-    ASSERT_TRUE(invalidResult.has_value());
-    EXPECT_FALSE(invalidResult.value());
+    auto store_result = m_Store->store_token("test-token", now + 3600);
+    ASSERT_TRUE(store_result.has_value());
+    auto valid_result = m_Store->validate_token("test-token");
+    ASSERT_TRUE(valid_result.has_value());
+    EXPECT_TRUE(valid_result.value());
+    auto invalid_result = m_Store->validate_token("wrong-token");
+    ASSERT_TRUE(invalid_result.has_value());
+    EXPECT_FALSE(invalid_result.value());
 }
 
 TEST_F(MetadataStoreTest, AuthTokenExpiry) {

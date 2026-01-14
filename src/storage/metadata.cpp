@@ -2,7 +2,7 @@
 #include <sap_core/log.h>
 #include <sstream>
 
-namespace sap::drive::storage {
+namespace sap::cloud::storage {
 
     MetadataStore::MetadataStore(db::Database db) : m_Db(std::move(db)) {}
 
@@ -596,4 +596,4 @@ namespace sap::drive::storage {
         return true;
     }
 
-} // namespace sap::drive::storage
+} // namespace sap::cloud::storage
