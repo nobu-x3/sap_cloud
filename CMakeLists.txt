@@ -20,6 +20,7 @@ add_subdirectory(tomlplusplus)
 
 add_library(sap_drive_lib STATIC
     src/storage/metadata.cpp
+    src/services/file_service.cpp
 )
 add_library(sap::drive_lib ALIAS sap_drive_lib)
 

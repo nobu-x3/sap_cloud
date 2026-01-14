@@ -1,6 +1,7 @@
 #include <filesystem>
 #include <fstream>
 #include <gtest/gtest.h>
+#include <sap_cloud/services/file_service.h>
 #include <sap_cloud/storage/metadata.h>
 #include <sap_fs/fs.h>
 #include <sap_sync/sync_types.h>
@@ -38,10 +39,36 @@ protected:
     std::unique_ptr<storage::MetadataStore> m_Store;
 };
 
+class FileServiceTest : public ::testing::Test {
+protected:
+    void SetUp() override {
+        m_TestDir = sfs::temp_directory_path() / "sap_drive_svc_test";
+        m_DbPath = m_TestDir / "test.db";
+        sfs::create_directories(m_TestDir);
+        m_Fs = std::make_unique<fs::Filesystem>(m_TestDir / "files");
+        sfs::create_directories(m_TestDir / "files");
+        auto store_result = storage::MetadataStore::open(m_DbPath);
+        ASSERT_TRUE(store_result.has_value());
+        m_Store = std::make_unique<storage::MetadataStore>(std::move(store_result.value()));
+        m_Service = std::make_unique<services::FileService>(*m_Fs, *m_Store);
+    }
+    void TearDown() override {
+        m_Service.reset();
+        m_Store.reset();
+        m_Fs.reset();
+        sfs::remove_all(m_TestDir);
+    }
+    sfs::path m_TestDir;
+    sfs::path m_DbPath;
+    std::unique_ptr<fs::Filesystem> m_Fs;
+    std::unique_ptr<storage::MetadataStore> m_Store;
+    std::unique_ptr<services::FileService> m_Service;
+};
+
 TEST_F(FilesystemTest, WriteAndRead) {
     std::vector<u8> content = {'H', 'e', 'l', 'l', 'o'};
-    auto writeResult = m_Fs->write("test.txt", content);
-    ASSERT_TRUE(writeResult.has_value()) << writeResult.error();
+    auto write_result = m_Fs->write("test.txt", content);
+    ASSERT_TRUE(write_result.has_value()) << write_result.error();
     auto readResult = m_Fs->read("test.txt");
     ASSERT_TRUE(readResult.has_value()) << readResult.error();
     EXPECT_EQ(readResult.value(), content);
@@ -243,4 +270,42 @@ TEST_F(MetadataStoreTest, AuthTokenExpiry) {
     auto result = m_Store->validate_token("expired-token");
     ASSERT_TRUE(result.has_value());
     EXPECT_FALSE(result.value());
+}
+
+TEST_F(FileServiceTest, PutAndGetFile) {
+    std::vector<u8> content = {'H', 'e', 'l', 'l', 'o'};
+    auto put_result = m_Service->put_file("test.txt", content);
+    ASSERT_TRUE(put_result.has_value()) << put_result.error();
+    EXPECT_EQ(put_result.value().size, 5);
+    EXPECT_FALSE(put_result.value().hash.empty());
+    auto get_result = m_Service->get_file("test.txt");
+    ASSERT_TRUE(get_result.has_value()) << get_result.error();
+    EXPECT_EQ(get_result.value(), content);
+}
+
+TEST_F(FileServiceTest, DeleteFile) {
+    std::vector<u8> content = {'T', 'e', 's', 't'};
+    auto res = m_Service->put_file("to_delete.txt", content);
+    auto delete_result = m_Service->delete_file("to_delete.txt");
+    ASSERT_TRUE(delete_result.has_value());
+    auto get_result = m_Service->get_file("to_delete.txt");
+    EXPECT_FALSE(get_result.has_value()); // Should fail, file is deleted
+}
+
+TEST_F(FileServiceTest, ListFiles) {
+    auto res = m_Service->put_file("file1.txt", std::vector<u8>{'1'});
+    res = m_Service->put_file("file2.txt", std::vector<u8>{'2'});
+    auto result = m_Service->list_files();
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value().size(), 2);
+}
+
+TEST_F(FileServiceTest, GetMetadata) {
+    std::vector<u8> content = {'D', 'a', 't', 'a'};
+    auto res = m_Service->put_file("meta_test.txt", content);
+    auto result = m_Service->get_metadata("meta_test.txt");
+    ASSERT_TRUE(result.has_value());
+    ASSERT_TRUE(result.value().has_value());
+    EXPECT_EQ(result.value()->path, "meta_test.txt");
+    EXPECT_EQ(result.value()->size, 4);
 }
