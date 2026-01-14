@@ -12,6 +12,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 option(SAP_DRIVE_BUILD_TESTS "Build sap_drive tests" ${PROJECT_IS_TOP_LEVEL})
 
 add_subdirectory(sap_core)
+add_subdirectory(sap_fs)
 add_subdirectory(sap_db)
 add_subdirectory(sap_http)
 add_subdirectory(sap_sync)
@@ -44,6 +45,7 @@ target_link_libraries(sap_drive_lib
     PUBLIC
         # sap::core
         sap::db
+        sap::fs
         sap::http
         sap::sync
         tomlplusplus::tomlplusplus
@@ -63,3 +65,12 @@ add_executable(sap_drive
 )
 
 target_link_libraries(sap_drive PRIVATE sap_drive_lib)
+
+if(SAP_DRIVE_BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif()
+
+install(TARGETS sap_drive
+    RUNTIME DESTINATION bin
+)
