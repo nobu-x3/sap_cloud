@@ -1,19 +1,20 @@
-#include <sap_cloud/config.h>
-#include <sap_core/log.h>
-#include <iostream>
 #include <csignal>
 #include <filesystem>
+#include <iostream>
+#include <sap_cloud/config.h>
+#include <sap_cloud/server.h>
+#include <sap_core/log.h>
 
 namespace {
-    // sap::cloud::Server* g_Server = nullptr;
+    sap::cloud::Server* g_Server = nullptr;
 }
 
 void signal_handler(int sig) {
     if (sig == SIGINT || sig == SIGTERM) {
         sap::log::info("Received signal {}, shutting down...", sig);
-        // if (g_Server) {
-        //     g_Server->stop();
-        // }
+        if (g_Server) {
+            g_Server->stop();
+        }
     }
 }
 
@@ -59,22 +60,22 @@ int main(int argc, char* argv[]) {
     }
     auto& config = config_result.value();
     // Create server
-    // auto server_result = sap::cloud::Server::create(config);
-    // if (!server_result) {
-    //     sap::log::error("Failed to create server: {}", server_result.error());
-    //     return 1;
-    // }
-    // auto& server = server_result.value();
-    // g_Server = server.get();
+    auto server_result = sap::cloud::Server::create(config);
+    if (!server_result) {
+        sap::log::error("Failed to create server: {}", server_result.error());
+        return 1;
+    }
+    auto& server = server_result.value();
+    g_Server = server.get();
     // Setup signal handlers
     std::signal(SIGINT, signal_handler);
     std::signal(SIGTERM, signal_handler);
     // Run server
-    sap::log::info("SapDrive v0.1.0 starting...");
+    sap::log::info("sap_cloud v0.1.0 starting...");
     sap::log::info("Data directory: {}", sap::cloud::get_data_dir().string());
     sap::log::info("Files root: {}", config.storage.files_root.string());
     sap::log::info("Notes root: {}", config.storage.notes_root.string());
-    // server->run();
+    server->run();
     sap::log::info("Server stopped");
     return 0;
 }

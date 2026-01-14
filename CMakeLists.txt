@@ -22,6 +22,7 @@ add_library(sap_cloud_lib STATIC
     src/config.cpp
     src/metadata.cpp
     src/auth_manager.cpp
+    src/server.cpp
     src/services/file_service.cpp
     src/services/notes_service.cpp
     src/services/sync_service.cpp
