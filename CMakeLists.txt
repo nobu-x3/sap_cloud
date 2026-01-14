@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(sap_drive
+project(sap_cloud
     VERSION 0.1.0
     DESCRIPTION "SapCloud file storage and sync server"
     LANGUAGES C CXX
@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-option(SAP_DRIVE_BUILD_TESTS "Build sap_drive tests" ${PROJECT_IS_TOP_LEVEL})
+option(SAP_DRIVE_BUILD_TESTS "Build sap_cloud tests" ${PROJECT_IS_TOP_LEVEL})
 
 add_subdirectory(sap_core)
 add_subdirectory(sap_fs)
@@ -18,7 +18,7 @@ add_subdirectory(sap_http)
 add_subdirectory(sap_sync)
 add_subdirectory(tomlplusplus)
 
-add_library(sap_drive_lib STATIC
+add_library(sap_cloud_lib STATIC
     src/config.cpp
     src/metadata.cpp
     src/auth_manager.cpp
@@ -26,9 +26,9 @@ add_library(sap_drive_lib STATIC
     src/services/notes_service.cpp
     src/services/sync_service.cpp
 )
-add_library(sap::drive_lib ALIAS sap_drive_lib)
+add_library(sap::drive_lib ALIAS sap_cloud_lib)
 
-target_include_directories(sap_drive_lib
+target_include_directories(sap_cloud_lib
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/sap_core/include>
@@ -46,7 +46,7 @@ target_include_directories(sap_drive_lib
         $<INSTALL_INTERFACE:tomlplusplus/include>
 )
 
-target_link_libraries(sap_drive_lib
+target_link_libraries(sap_cloud_lib
     PUBLIC
         # sap::core
         sap::db
@@ -56,26 +56,26 @@ target_link_libraries(sap_drive_lib
         tomlplusplus::tomlplusplus
 )
 
-target_compile_features(sap_drive_lib PUBLIC cxx_std_20)
+target_compile_features(sap_cloud_lib PUBLIC cxx_std_20)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    target_compile_options(sap_drive_lib PRIVATE -Wall -Wextra -Wpedantic)
+    target_compile_options(sap_cloud_lib PRIVATE -Wall -Wextra -Wpedantic)
 elseif(MSVC)
-    target_compile_options(sap_drive_lib PRIVATE /W4)
+    target_compile_options(sap_cloud_lib PRIVATE /W4)
 endif()
 
 # Main executable
-add_executable(sap_drive
+add_executable(sap_cloud
     src/main.cpp
 )
 
-target_link_libraries(sap_drive PRIVATE sap_drive_lib)
+target_link_libraries(sap_cloud PRIVATE sap_cloud_lib)
 
 if(SAP_DRIVE_BUILD_TESTS)
     enable_testing()
     add_subdirectory(tests)
 endif()
 
-install(TARGETS sap_drive
+install(TARGETS sap_cloud
     RUNTIME DESTINATION bin
 )
