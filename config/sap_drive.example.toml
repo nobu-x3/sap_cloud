@@ -1,0 +1,45 @@
+# =============================================================================
+# SapDrive Configuration
+# =============================================================================
+# Copy this file to ~/.sapcloud/sap_drive.toml and customize as needed.
+# =============================================================================
+
+[server]
+# Network interface to bind to
+# "127.0.0.1" = localhost only (safest, use with SSH tunnel)
+# "0.0.0.0" = all interfaces (use only if you have external auth)
+host = "127.0.0.1"
+
+# Port to listen on
+port = 8080
+
+# Enable multithreaded request handling
+multithreaded = true
+
+[storage]
+# Root directory for file storage
+# Default: ~/.sapcloud/files
+# files_root = "/path/to/files"
+
+# Root directory for notes
+# Default: ~/.sapcloud/notes
+# notes_root = "/path/to/notes"
+
+# Database file path
+# Default: ~/.sapcloud/sap_drive.db
+# database = "/path/to/database.db"
+
+[auth]
+# Path to authorized_keys file (SSH public keys that can authenticate)
+# Default: ~/.sapcloud/authorized_keys
+# authorized_keys = "/path/to/authorized_keys"
+
+# Token expiry time in seconds (default: 24 hours)
+token_expiry = 86400
+
+# Challenge expiry time in seconds (default: 5 minutes)
+challenge_expiry = 300
+
+[logging]
+# Log level: debug, info, warn, error
+level = "info"

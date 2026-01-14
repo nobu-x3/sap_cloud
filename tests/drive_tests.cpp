@@ -3,6 +3,7 @@
 #include <gtest/gtest.h>
 #include <sap_cloud/services/file_service.h>
 #include <sap_cloud/storage/metadata.h>
+#include <sap_cloud/config.h>
 #include <sap_fs/fs.h>
 #include <sap_sync/sync_types.h>
 
@@ -308,4 +309,24 @@ TEST_F(FileServiceTest, GetMetadata) {
     ASSERT_TRUE(result.value().has_value());
     EXPECT_EQ(result.value()->path, "meta_test.txt");
     EXPECT_EQ(result.value()->size, 4);
+}
+
+TEST(ConfigTest, GetDataDir) {
+    auto data_dir = sap::cloud::get_data_dir();
+    EXPECT_FALSE(data_dir.empty());
+    EXPECT_TRUE(data_dir.string().find("sapcloud") != std::string::npos);
+}
+
+TEST(ConfigTest, DefaultConfig) {
+    auto result = sap::cloud::load_config_default();
+    // May or may not find a config file, but shouldn't crash
+    ASSERT_TRUE(result.has_value());
+    // Check defaults
+    EXPECT_EQ(result.value().server.port, 8080);
+    EXPECT_EQ(result.value().server.host, "127.0.0.1");
+}
+
+int main(int argc, char** argv) {
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }
