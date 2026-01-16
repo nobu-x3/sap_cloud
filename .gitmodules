@@ -1,18 +1,18 @@
 [submodule "sap_core"]
 	path = sap_core
-	url = git@github.com:nobu-x3/sap_core.git
+	url = https://github.com/nobu-x3/sap_core.git
 [submodule "sap_fs"]
 	path = sap_fs
-	url = git@github.com:nobu-x3/sap_fs.git
+	url = https://github.com/nobu-x3/sap_fs.git
 [submodule "sap_sync"]
 	path = sap_sync
-	url = git@github.com:nobu-x3/sap_sync.git
+	url = https://github.com/nobu-x3/sap_sync.git
 [submodule "sap_db"]
 	path = sap_db
-	url = git@github.com:nobu-x3/sap_db.git
+	url = https://github.com/nobu-x3/sap_db.git
 [submodule "sap_http"]
 	path = sap_http
-	url = git@github.com:nobu-x3/sap_http.git
+	url = https://github.com/nobu-x3/sap_http.git
 [submodule "tomlplusplus"]
 	path = tomlplusplus
 	url = https://github.com/marzer/tomlplusplus.git
