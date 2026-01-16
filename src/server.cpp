@@ -3,7 +3,7 @@
 
 namespace sap::cloud {
 
-    Server::Server(const Config& config) : m_Config(config), m_HttpServer({-1, config.server.port, config.server.multithreaded}) {}
+    Server::Server(const Config& config) : m_Config(config), m_HttpServer({-1, config.server.host, config.server.port, config.server.multithreaded}) {}
 
     stl::result<std::unique_ptr<Server>> Server::create(const Config& config) {
         auto server = std::unique_ptr<Server>(new Server(config));
